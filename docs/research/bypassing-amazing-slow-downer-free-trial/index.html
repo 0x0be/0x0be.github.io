@@ -111,16 +111,16 @@
     </div>
 
     <div class="article-content e-content" itemprop="articleBody">
-        <p>Every now and then I pickup my Ibanez 350DXZ and play some trash metal guitar solos.<br>
-Not having a &ldquo;good ear&rdquo; (only excellent taste in music), I always find it helpful to slow down the tracks to better understand what notes were being hit.<br>
+        <p>Every now and then I pick up my <strong>Ibanez 350DXZ</strong> and play some trash metal guitar solos.<br>
+Not having a &ldquo;good ear&rdquo; (only excellent taste in music), I always find it helpful to slow down the tracks to better understand what notes are being hit.<br>
 And no program slows music down without changing the pitch better than Amazing Slow Downer.</p>
 <p>Let&rsquo;s have a look at the latest version (i.e., 3.7.2).<br>
 As the initial popup points out, the unregistered free trial (092f9dad773ee330d8672849dede18ea) only plays the first and second track of a CD or the first quarter (max 3 minutes) of an audio file.</p>
 <p><img src="images/image-1.png" alt="Alt text"></p>
-<p>Of course, that&rsquo;s not what we were looking for.<br>
+<p>Of course, that is not what we are looking for.<br>
 So after playing around a bit, we notice that - when closing the program - a text file called &ldquo;<strong>Order.txt</strong>&rdquo; appears to the user, prompting him to buy the software.</p>
 <p><img src="images/image-2.png" alt="Alt text"></p>
-<p>Now it’s time to load ASD in our favorite disassembler and look for &ldquo;Order.txt&rdquo; via <strong>Search Text</strong> (ALT+T).
+<p>Time to load ASD in our favorite disassembler and look for &ldquo;Order.txt&rdquo; via <strong>Search Text</strong> (ALT+T).
 The only occurrence resides in the following portion of code.</p>
 <p><img src="images/image-3.png" alt="Alt text"></p>
 <p>This means that <code>dword_6F3E30</code> returns true if its value is zero (i.e., false).<br>

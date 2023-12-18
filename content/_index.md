@@ -31,7 +31,7 @@ imgname:
 #
 Ciao, I'm **0x0be**!  
 A malware analyst passionate about reverse engineering and cyber threat intelligence.  
-I've always liked to break things, so hopefully you'll find something interesting here!  
+I have always liked to break things, so hopefully you will find something interesting here!  
 
 
 
