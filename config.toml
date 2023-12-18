@@ -1,0 +1,68 @@
+# The URL from which the site will be served
+baseurl = "https://0x0be.github.io/"
+# Language used
+languageCode = "en-us"
+# Website title
+title = "0x0be"
+# Theme used
+theme = "hugo-astatine-theme"
+publishDir = "docs"
+
+preserveTaxonomyNames = true
+rssLimit = 10
+paginate = 10
+
+# Code highlighting
+pygmentsCodefences = true
+pygmentsStyle = "native"
+
+# Taxonomies (only tags and categories are supported out of the box but you can
+# add more)
+[taxonomies]
+    category = "categories"  
+    tag = "tags"
+
+# Configure permalinks style
+[permalinks]
+    post = "/:slug/"
+    page = "/:slug/"
+
+# Configure main navbar links. They can have a weight to select the order.
+# This links to content within the content/post/ folder
+[[menu.main]]
+    name = "Research"
+    url = "/research/"
+    weight = -50
+
+
+# Site wide params and SEO
+[params]
+    # Site description. Individual pages can have descriptions too but if
+    # missing it will fallback to that one.
+    description = """The homepage of Astatine. This website is a demo the of the \
+    Hugo theme Astatine."""
+    # Author of the site
+    #authorName = ""
+    # Main image for the author. This will be the default image for SEO.
+    [params.imgname]
+        name = "img/main.jpg"
+        # Add an alt description for the image
+        alt = "Profile picture"
+
+    # Indicate if you host Katex yourself. Defaults to using the CDN KaTex.
+    # hostedKaTex = false
+
+    # Optional: add a twitter handle and mastodon handle for SEO.
+    # [params.twitter]
+        # name = "@Jack_harkness"
+    
+    # Enable link to feed in footer
+    blogrss = true
+
+    # Enable pingback and webmention via webmention.io
+    # webmention = "hugocisneros.com"
+
+
+# Sitemap location (default is /sitemap.xml)
+[sitemap]
+  filename = "sitemap.xml"

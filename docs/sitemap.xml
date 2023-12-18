@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    
+    <url>
+        <loc>https://0x0be.github.io/</loc>
+        <lastmod>2023-10-03T00:00:00+00:00</lastmod>
+    </url>
+    
+    <url>
+        <loc>https://0x0be.github.io/research/</loc>
+        <lastmod>2023-10-03T00:00:00+00:00</lastmod>
+        <priority>0</priority>
+    </url>
+    
+    <url>
+        <loc>https://0x0be.github.io/research/bypassing-amazing-slow-downer-free-trial/</loc>
+        <lastmod>2023-10-03T00:00:00+00:00</lastmod>
+    </url>
+    
+    <url>
+        <loc>https://0x0be.github.io/categories/</loc>
+    </url>
+    
+    <url>
+        <loc>https://0x0be.github.io/tags/</loc>
+    </url>
+    
+</urlset>

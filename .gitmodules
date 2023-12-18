@@ -1,0 +1,9 @@
+[submodule "themes/astatine"]
+	path = themes/astatine
+	url = https://github.com/hugcis/hugo-astatine-theme
+[submodule "themes/hugo-PaperMod"]
+	path = themes/hugo-PaperMod
+	url = https://github.com/adityatelange/hugo-PaperMod
+[submodule "themes/hugo-astatine-theme"]
+	path = themes/hugo-astatine-theme
+	url = https://github.com/hugcis/hugo-astatine-theme
