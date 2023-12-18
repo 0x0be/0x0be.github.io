@@ -591,6 +591,12 @@ img {
   }
 }
 
+@media(min-width: 768px) {
+  .picture {
+         padding: 2rem 12rem !important;
+  } 
+} 
+
 figcaption {
   text-align: center;
 }
@@ -841,7 +847,7 @@ blockquote p {
 }
 
 .container {
-  width: 50%;
+  width: 100%;
   margin-right: auto;
   margin-left: auto;
 }
@@ -1438,7 +1444,7 @@ blockquote p {
 }
 
 .p-8 {
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .p-2\.5 {
