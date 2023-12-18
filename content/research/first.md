@@ -4,8 +4,8 @@ title = "Bypassing Amazing Slow Downer free trial"
 slug = "bypassing-amazing-slow-downer-free-trial"
 +++
 
-Every now and then I pickup my Ibanez 350DXZ and play some trash metal guitar solos.   
-Not having a "good ear" (only excellent taste in music), I always find it helpful to slow down the tracks to better understand what notes were being hit.   
+Every now and then I pick up my **Ibanez 350DXZ** and play some trash metal guitar solos.   
+Not having a "good ear" (only excellent taste in music), I always find it helpful to slow down the tracks to better understand what notes are being hit.   
 And no program slows music down without changing the pitch better than Amazing Slow Downer.
 
 Let's have a look at the latest version (i.e., 3.7.2).  
@@ -13,12 +13,12 @@ As the initial popup points out, the unregistered free trial (092f9dad773ee330d8
 
 ![Alt text](images/image-1.png)
 
-Of course, that's not what we were looking for.  
+Of course, that is not what we are looking for.  
 So after playing around a bit, we notice that - when closing the program - a text file called "**Order.txt**" appears to the user, prompting him to buy the software.
 
 ![Alt text](images/image-2.png)
 
-Now it’s time to load ASD in our favorite disassembler and look for "Order.txt" via **Search Text** (ALT+T). 
+Time to load ASD in our favorite disassembler and look for "Order.txt" via **Search Text** (ALT+T). 
 The only occurrence resides in the following portion of code.  
 
 ![Alt text](images/image-3.png)
