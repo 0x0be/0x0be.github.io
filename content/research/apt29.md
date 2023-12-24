@@ -12,7 +12,7 @@ On December 19, 2022 malware researcher known as **StopMalvertisin** twitted abo
 ![Alt text](image-0.png)
 
 The spear-phishing campaign targeted **SberAuto**, a Russian online car trading platform associated with the state-owned banking and financial services company **Sberbank**.  
-The analyzed attack displayed similar TTPs commonly attributed to **APT29** (aka **Cozy Bear**), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.
+The analyzed attack displayed similar **TTPs** commonly attributed to **APT29** (aka **Cozy Bear**), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.
 
 
 ## Technical Analysis
@@ -56,11 +56,15 @@ After that, the malicious DLL iterates through the running processes using ```Pr
 
 ![Alt text](image-8.png)
 
-It then creates a *suspended-process* called **RuntimeBroker.exe** using ```CreateProcessA``` and sets "explorer.exe" as the parent process via ```UpdateProcThreadAttribute``` API.   
+It then creates a *suspended-process* called **RuntimeBroker.exe** using ```CreateProcessA``` and sets "explorer.exe" as the parent process via ```UpdateProcThreadAttribute``` API.
+
+The attribute parameter with the value 0x20007 corresponds to the definition of **PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY**, while the value ```0x100000000000``` corresponds to **PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON**: it is typical for **CobaltStrike** to use CreateProcess API call along with a **STARTUPINFOEX** structure containing this mitigation policy to block DLLs that are not signed by Microsoft.
 
 ![Alt text](image-9.png)
 
-Finally, it decrypts the shellcode into "RuntimeBroker.exe" through ```NtAllocateVirtualMemory``` and ```NtWriteVirtualMemory```, setting it to an executable **APC routine** which is thus run via the ```NtAlertResumeThread``` syscall.  
+
+Finally, the DLL decrypts the shellcode into "RuntimeBroker.exe" through ```NtAllocateVirtualMemory``` and ```NtWriteVirtualMemory```, sets it to an executable **APC routine** and run it via the ```NtAlertResumeThread```.
+All this function API calls are done directly via **syscall** to hinder analysis. 
 
 ![Alt text](image-10.png)
 
@@ -70,7 +74,11 @@ The presence of specific debug strings shows that the program was created with *
 
 
 ### Final stage: Cobalt Strike
-The final payload is a **Cobalt Strike Beacon** that, after obtaining the relevant information about the victim machine such as *username*, *computer name* and *computer version*, sends them to the **C2** ```adblockext[.]ru``` domain via  **Base64-encoded** scheme. 
+The shellcode 
+
+
+
+  that, after obtaining the relevant information about the victim machine such as *username*, *computer name* and *computer version*, sends them to the **C2** ```adblockext[.]ru``` domain via  **Base64-encoded** scheme. 
 
 
 ```

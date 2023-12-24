@@ -115,7 +115,7 @@
 <p>On December 19, 2022 malware researcher known as <strong>StopMalvertisin</strong> twitted about a possible APT29 attack.</p>
 <p><img src="image-0.png" alt="Alt text"></p>
 <p>The spear-phishing campaign targeted <strong>SberAuto</strong>, a Russian online car trading platform associated with the state-owned banking and financial services company <strong>Sberbank</strong>.<br>
-The analyzed attack displayed similar TTPs commonly attributed to <strong>APT29</strong> (aka <strong>Cozy Bear</strong>), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.</p>
+The analyzed attack displayed similar <strong>TTPs</strong> commonly attributed to <strong>APT29</strong> (aka <strong>Cozy Bear</strong>), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.</p>
 <h2 id="technical-analysis">Technical Analysis</h2>
 <h3 id="initial-stage">Initial Stage</h3>
 <p>The first stage of this attack is represented by an <strong>ISO</strong> file (0b32bd907072d95223e5eb2dc5e3d9e0) named &ldquo;Алкоголь_2023_zip.iso&rdquo; (i.e., &ldquo;Alcohol&rdquo;), uploaded on VirusTotal from Russia on December 19, 2022 and potentially delivered as an email attachment.</p>
@@ -138,13 +138,16 @@ If the hostname does not match, the program terminates.</p>
 <p>After that, the malicious DLL iterates through the running processes using <code>Process32Next</code> to find the ID of <strong>explorer.exe</strong> and obtain its process handle.</p>
 <p><img src="image-8.png" alt="Alt text"></p>
 <p>It then creates a <em>suspended-process</em> called <strong>RuntimeBroker.exe</strong> using <code>CreateProcessA</code> and sets &ldquo;explorer.exe&rdquo; as the parent process via <code>UpdateProcThreadAttribute</code> API.</p>
+<p>The attribute parameter with the value 0x20007 corresponds to the definition of <strong>PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY</strong>, while the value <code>0x100000000000</code> corresponds to <strong>PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON</strong>: it is typical for <strong>CobaltStrike</strong> to use CreateProcess API call along with a <strong>STARTUPINFOEX</strong> structure containing this mitigation policy to block DLLs that are not signed by Microsoft.</p>
 <p><img src="image-9.png" alt="Alt text"></p>
-<p>Finally, it decrypts the shellcode into &ldquo;RuntimeBroker.exe&rdquo; through <code>NtAllocateVirtualMemory</code> and <code>NtWriteVirtualMemory</code>, setting it to an executable <strong>APC routine</strong> which is thus run via the <code>NtAlertResumeThread</code> syscall.</p>
+<p>Finally, the DLL decrypts the shellcode into &ldquo;RuntimeBroker.exe&rdquo; through <code>NtAllocateVirtualMemory</code> and <code>NtWriteVirtualMemory</code>, sets it to an executable <strong>APC routine</strong> and run it via the <code>NtAlertResumeThread</code>.
+All this function API calls are done directly via <strong>syscall</strong> to hinder analysis.</p>
 <p><img src="image-10.png" alt="Alt text"></p>
 <p>The presence of specific debug strings shows that the program was created with <strong>Shhhloader</strong> framework, a &ldquo;shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR&rdquo;.</p>
 <p><img src="image-11.png" alt="Alt text"></p>
 <h3 id="final-stage-cobalt-strike">Final stage: Cobalt Strike</h3>
-<p>The final payload is a <strong>Cobalt Strike Beacon</strong> that, after obtaining the relevant information about the victim machine such as <em>username</em>, <em>computer name</em> and <em>computer version</em>, sends them to the <strong>C2</strong> <code>adblockext[.]ru</code> domain via  <strong>Base64-encoded</strong> scheme.</p>
+<p>The shellcode</p>
+<p>that, after obtaining the relevant information about the victim machine such as <em>username</em>, <em>computer name</em> and <em>computer version</em>, sends them to the <strong>C2</strong> <code>adblockext[.]ru</code> domain via  <strong>Base64-encoded</strong> scheme.</p>
 <pre tabindex="0"><code>https://adblockext[.]ru/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN?_=BASE64_ENCODED_DATA
 </code></pre><h2 id="conclusion">Conclusion</h2>
 <p>The similarities with previous APT29 campaigns (i.e., the use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of final hypotheses.<br>
