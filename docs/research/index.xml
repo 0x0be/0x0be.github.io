@@ -31,5 +31,17 @@ The analyzed attack displayed similar TTPs commonly attributed to APT29 (aka Coz
 Technical Analysis Initial Stage The first stage of this attack is represented by an ISO file (0b32bd907072d95223e5eb2dc5e3d9e0) named &amp;ldquo;Алкоголь_2023_zip.</description>
     </item>
     
+    <item>
+      <title>The curious case of SberAuto spear-phishing campaign</title>
+      <link>https://0x0be.github.io/research/the-curious-case-of-sberauto-spear-phishing-campaign/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://0x0be.github.io/research/the-curious-case-of-sberauto-spear-phishing-campaign/</guid>
+      <description>Summary On December 19, 2022 malware researcher known as StopMalvertisin twitted about a possible APT29 attack.
+The spear-phishing campaign targets SberAuto, a Russian online car trading platform associated with the state-owned banking and financial services company Sberbank.
+The analyzed attack displayed similar TTPs commonly attributed to APT29 (aka Cozy Bear), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.
+Technical Analysis Initial Stage The first stage of this attack is represented by an ISO file (0b32bd907072d95223e5eb2dc5e3d9e0) named &amp;ldquo;Алкоголь_2023_zip.</description>
+    </item>
+    
   </channel>
 </rss>
