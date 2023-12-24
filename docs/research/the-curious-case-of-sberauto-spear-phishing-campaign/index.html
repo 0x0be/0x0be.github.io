@@ -114,11 +114,11 @@
         <h3 id="summary">Summary</h3>
 <p>On December 19, 2022 malware researcher known as <strong>StopMalvertisin</strong> twitted about a possible APT29 attack.</p>
 <p><img src="image-0.png" alt="Alt text"></p>
-<p>The spear-phishing campaign targeted <strong>SberAuto</strong>, a Russian online car trading platform associated with the state-owned banking and financial services company <strong>Sberbank</strong>.<br>
+<p>The spear-phishing campaign targets <strong>SberAuto</strong>, a Russian online car trading platform associated with the state-owned banking and financial services company <strong>Sberbank</strong>.<br>
 The analyzed attack displayed similar <strong>TTPs</strong> commonly attributed to <strong>APT29</strong> (aka <strong>Cozy Bear</strong>), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.</p>
 <h2 id="technical-analysis">Technical Analysis</h2>
 <h3 id="initial-stage">Initial Stage</h3>
-<p>The first stage of this attack is represented by an <strong>ISO</strong> file (0b32bd907072d95223e5eb2dc5e3d9e0) named &ldquo;Алкоголь_2023_zip.iso&rdquo; (i.e., &ldquo;Alcohol&rdquo;), uploaded on VirusTotal from Russia on December 19, 2022 and potentially delivered as an email attachment.</p>
+<p>The first stage of this attack is represented by an <strong>ISO</strong> file (0b32bd907072d95223e5eb2dc5e3d9e0) named &ldquo;Алкоголь_2023_zip.iso&rdquo;, uploaded on VirusTotal from Russia on December 19, 2022 and potentially delivered as an email attachment.</p>
 <p><img src="image-1.png" alt="Alt text"></p>
 <p>The archive content closely resembles the one of previous APT29 campaigns.</p>
 <p><img src="image-2.png" alt="Alt text"></p>
@@ -145,14 +145,47 @@ All this function API calls are done directly via <strong>syscall</strong> to hi
 <p><img src="image-10.png" alt="Alt text"></p>
 <p>The presence of specific debug strings shows that the program was created with <strong>Shhhloader</strong> framework, a &ldquo;shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR&rdquo;.</p>
 <p><img src="image-11.png" alt="Alt text"></p>
-<h3 id="final-stage-cobalt-strike">Final stage: Cobalt Strike</h3>
-<p>The shellcode</p>
-<p>that, after obtaining the relevant information about the victim machine such as <em>username</em>, <em>computer name</em> and <em>computer version</em>, sends them to the <strong>C2</strong> <code>adblockext[.]ru</code> domain via  <strong>Base64-encoded</strong> scheme.</p>
-<pre tabindex="0"><code>https://adblockext[.]ru/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN?_=BASE64_ENCODED_DATA
-</code></pre><h2 id="conclusion">Conclusion</h2>
-<p>The similarities with previous APT29 campaigns (i.e., the use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of final hypotheses.<br>
-First, the attacks may be either orchestrated by Ukrainian groups (particularly, the &ldquo;The IT Army of Ukraine&rdquo;) trying to simulate Cozy Bear TTPs.<br>
-Alternately, this could be also a Russian red teaming exercise to enhance internal cybersecurity measures.</p>
+<h3 id="final-stage-cobalt-strike-payload">Final stage: Cobalt Strike payload</h3>
+<p>The APC inject shellcode represents a <strong>Cobalt Strike backdoor</strong>, as evidenced by the multiple signature matches of the THOR APT Scanner.<br>
+Firstly, the shellcode finds the &ldquo;MZ&rdquo; and &ldquo;PE&rdquo; header in the memory.</p>
+<p><img src="image-12.png" alt="Alt text"></p>
+<p>Then it links the following Windows API function at <strong>runtime</strong> from parsing <strong>PEB_LDR_DATA</strong> to avoid detection.</p>
+<ul>
+<li>GetProcAddress</li>
+<li>GetModuleHandleW</li>
+<li>LoadLibraryW</li>
+<li>VirtualAlloc</li>
+<li>VirtualProtect</li>
+</ul>
+<p><img src="image-13.png" alt="Alt text"></p>
+<p><img src="image-14.png" alt="Alt text"></p>
+<p>After allocating a <strong>RWX</strong> protected memory portion, it injects the shellcode into &ldquo;RuntimeBroker.exe&rdquo; process by calling once again the same initial entry function.</p>
+<p><img src="image-15.png" alt="Alt text"></p>
+<p>To extract the C2 configuration of <strong>Cobalt Strike beacon</strong>, SentinelOne CobaltStrikeParser Python script comes in handy.</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python parse_beacon_config.py --json version.dll
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;BeaconType&#34;</span>: [
+</span></span><span style="display:flex;"><span>    <span style="color:#ed9d13">&#34;HTTPS&#34;</span>
+</span></span><span style="display:flex;"><span>  ],
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;Port&#34;</span>: <span style="color:#3677a9">443</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;SleepTime&#34;</span>: <span style="color:#3677a9">46000</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;MaxGetSize&#34;</span>: <span style="color:#3677a9">1398924</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;Jitter&#34;</span>: <span style="color:#3677a9">32</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;MaxDNS&#34;</span>: <span style="color:#ed9d13">&#34;Not Found&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;PublicKey&#34;</span>: <span style="color:#ed9d13">&#34;MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCSrC60Ubq+U90iLmHldoLVFW6Bc7vLsQ12BXGcc2c8TQJbnaf8I9dm/dhdZPEoCwQKRbjD/2xlR4Vr/S7IGj1Sh8gKHfJXh96lIhR5W85/+Fdi0weqGbrx9mbu70Ir7bA0ar1vwK17RFIla7B24ffVWNTfsO4fuagDSmR6MSKK2wIDAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;PublicKey_MD5&#34;</span>: <span style="color:#ed9d13">&#34;ad07d632e310a66efeb503ee9089ad64&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;C2Server&#34;</span>: <span style="color:#ed9d13">&#34;adblockext.ru,/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;UserAgent&#34;</span>: <span style="color:#ed9d13">&#34;Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4433.0 Safari/537.36&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#6ab825;font-weight:bold">&#34;HttpPostUri&#34;</span>: <span style="color:#ed9d13">&#34;/rest/2/meetingsfR4TG1Qpai0Oa1Q5fNxdUoAAfFn1&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The Cobalt Strike beacon uses <strong>Base64 scheme</strong> to communicates with the C2 domain <code>adblockext[.]ru</code> over <strong>HTTPS</strong>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This sample is interesting because a Russian-backed hacking group targeting a domestic website raises some suspicions.</p>
+<p>The similarities with previous APT29 campaigns (i.e., he use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of hypotheses about what this campaign could be:</p>
+<ul>
+<li>An internal Red Teaming exercise, aimed at enhancing cybersecurity measures inside SberAuto employees;</li>
+<li>An attack orchestrated by Ukrainian groups (particularly, The IT Army of Ukraine), trying to simulate Cozy Bear TTPs.</li>
+</ul>
 
     </div>
 

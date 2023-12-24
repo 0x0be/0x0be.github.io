@@ -11,13 +11,13 @@ On December 19, 2022 malware researcher known as **StopMalvertisin** twitted abo
 
 ![Alt text](image-0.png)
 
-The spear-phishing campaign targeted **SberAuto**, a Russian online car trading platform associated with the state-owned banking and financial services company **Sberbank**.  
+The spear-phishing campaign targets **SberAuto**, a Russian online car trading platform associated with the state-owned banking and financial services company **Sberbank**.  
 The analyzed attack displayed similar **TTPs** commonly attributed to **APT29** (aka **Cozy Bear**), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.
 
 
 ## Technical Analysis
 ### Initial Stage
-The first stage of this attack is represented by an **ISO** file (0b32bd907072d95223e5eb2dc5e3d9e0) named "Алкоголь_2023_zip.iso" (i.e., "Alcohol"), uploaded on VirusTotal from Russia on December 19, 2022 and potentially delivered as an email attachment.
+The first stage of this attack is represented by an **ISO** file (0b32bd907072d95223e5eb2dc5e3d9e0) named "Алкоголь_2023_zip.iso", uploaded on VirusTotal from Russia on December 19, 2022 and potentially delivered as an email attachment.
 
 ![Alt text](image-1.png) 
 
@@ -73,23 +73,60 @@ The presence of specific debug strings shows that the program was created with *
 ![Alt text](image-11.png)
 
 
-### Final stage: Cobalt Strike
-The shellcode 
+### Final stage: Cobalt Strike payload
+The APC inject shellcode represents a **Cobalt Strike backdoor**, as evidenced by the multiple signature matches of the THOR APT Scanner.  
+Firstly, the shellcode finds the "MZ" and "PE" header in the memory.
 
+![Alt text](image-12.png)
 
+Then it links the following Windows API function at **runtime** from parsing **PEB_LDR_DATA** to avoid detection.
+* GetProcAddress
+* GetModuleHandleW
+* LoadLibraryW
+* VirtualAlloc
+* VirtualProtect
 
-  that, after obtaining the relevant information about the victim machine such as *username*, *computer name* and *computer version*, sends them to the **C2** ```adblockext[.]ru``` domain via  **Base64-encoded** scheme. 
+![Alt text](image-13.png)
 
+![Alt text](image-14.png)
 
+After allocating a **RWX** protected memory portion, it injects the shellcode into "RuntimeBroker.exe" process by calling once again the same initial entry function.
+
+![Alt text](image-15.png)
+
+ To extract the C2 configuration of **Cobalt Strike beacon**, SentinelOne CobaltStrikeParser Python script comes in handy. 
+
+ ```bash
+ python parse_beacon_config.py --json version.dll
+ ```
+
+```json
+{
+  "BeaconType": [
+    "HTTPS"
+  ],
+  "Port": 443,
+  "SleepTime": 46000,
+  "MaxGetSize": 1398924,
+  "Jitter": 32,
+  "MaxDNS": "Not Found",
+  "PublicKey": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCSrC60Ubq+U90iLmHldoLVFW6Bc7vLsQ12BXGcc2c8TQJbnaf8I9dm/dhdZPEoCwQKRbjD/2xlR4Vr/S7IGj1Sh8gKHfJXh96lIhR5W85/+Fdi0weqGbrx9mbu70Ir7bA0ar1vwK17RFIla7B24ffVWNTfsO4fuagDSmR6MSKK2wIDAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "PublicKey_MD5": "ad07d632e310a66efeb503ee9089ad64",
+  "C2Server": "adblockext.ru,/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN",
+  "UserAgent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4433.0 Safari/537.36",
+  "HttpPostUri": "/rest/2/meetingsfR4TG1Qpai0Oa1Q5fNxdUoAAfFn1"
+}
 ```
-https://adblockext[.]ru/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN?_=BASE64_ENCODED_DATA
-```
+
+The Cobalt Strike beacon uses **Base64 scheme** to communicates with the C2 domain ```adblockext[.]ru``` over **HTTPS**.
 
 
 ## Conclusion
-The similarities with previous APT29 campaigns (i.e., the use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of final hypotheses.  
-First, the attacks may be either orchestrated by Ukrainian groups (particularly, the "The IT Army of Ukraine") trying to simulate Cozy Bear TTPs.  
-Alternately, this could be also a Russian red teaming exercise to enhance internal cybersecurity measures.
+This sample is interesting because a Russian-backed hacking group targeting a domestic website raises some suspicions.  
+
+The similarities with previous APT29 campaigns (i.e., he use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of hypotheses about what this campaign could be:
+* An internal Red Teaming exercise, aimed at enhancing cybersecurity measures inside SberAuto employees;
+* An attack orchestrated by Ukrainian groups (particularly, The IT Army of Ukraine), trying to simulate Cozy Bear TTPs.  
 
 
 
