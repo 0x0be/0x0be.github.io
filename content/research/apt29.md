@@ -47,11 +47,6 @@ The *compile-timestamp* shows **Sunday, December 18 2022**.
 
 ![Alt text](image-5.png)
 
-
-The presence of specific strings hints that the program was probably created with **Shhhloader** framework, a "shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR".  
-
-![Alt text](image-6.png)
-
 The binary first employs ```GetComputerNameExA``` API function to retrieve the hostname of the infected machine and check whether it is equal to ```corp.sberauto[.]com```, an online russian service facilitating car sales website.
 If the hostname does not match, the program terminates.
 
@@ -65,9 +60,13 @@ It then creates a *suspended-process* called **RuntimeBroker.exe** using ```Crea
 
 ![Alt text](image-9.png)
 
-Finally, it decrypts the shellcode into "RuntimeBroker.exe" through ```NtAllocateVirtualMemory``` and ```NtWriteVirtualMemory```, executing it via the ```NtAlertResumeThread``` syscall.  
+Finally, it decrypts the shellcode into "RuntimeBroker.exe" through ```NtAllocateVirtualMemory``` and ```NtWriteVirtualMemory```, setting it to an executable **APC routine** which is thus run via the ```NtAlertResumeThread``` syscall.  
 
 ![Alt text](image-10.png)
+
+The presence of specific debug strings shows that the program was created with **Shhhloader** framework, a "shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR".  
+
+![Alt text](image-11.png)
 
 
 ### Final stage: Cobalt Strike

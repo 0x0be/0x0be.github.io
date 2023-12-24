@@ -132,8 +132,6 @@ The analyzed attack displayed similar TTPs commonly attributed to <strong>APT29<
 <p>The dynamic-linked library &ldquo;version.dll&rdquo; is a 64-bit DLL which is side-loaded by the legit Microsoft OneDrive binary.<br>
 The <em>compile-timestamp</em> shows <strong>Sunday, December 18 2022</strong>.</p>
 <p><img src="image-5.png" alt="Alt text"></p>
-<p>The presence of specific strings hints that the program was probably created with <strong>Shhhloader</strong> framework, a &ldquo;shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR&rdquo;.</p>
-<p><img src="image-6.png" alt="Alt text"></p>
 <p>The binary first employs <code>GetComputerNameExA</code> API function to retrieve the hostname of the infected machine and check whether it is equal to <code>corp.sberauto[.]com</code>, an online russian service facilitating car sales website.
 If the hostname does not match, the program terminates.</p>
 <p><img src="image-7.png" alt="Alt text"></p>
@@ -141,8 +139,10 @@ If the hostname does not match, the program terminates.</p>
 <p><img src="image-8.png" alt="Alt text"></p>
 <p>It then creates a <em>suspended-process</em> called <strong>RuntimeBroker.exe</strong> using <code>CreateProcessA</code> and sets &ldquo;explorer.exe&rdquo; as the parent process via <code>UpdateProcThreadAttribute</code> API.</p>
 <p><img src="image-9.png" alt="Alt text"></p>
-<p>Finally, it decrypts the shellcode into &ldquo;RuntimeBroker.exe&rdquo; through <code>NtAllocateVirtualMemory</code> and <code>NtWriteVirtualMemory</code>, executing it via the <code>NtAlertResumeThread</code> syscall.</p>
+<p>Finally, it decrypts the shellcode into &ldquo;RuntimeBroker.exe&rdquo; through <code>NtAllocateVirtualMemory</code> and <code>NtWriteVirtualMemory</code>, setting it to an executable <strong>APC routine</strong> which is thus run via the <code>NtAlertResumeThread</code> syscall.</p>
 <p><img src="image-10.png" alt="Alt text"></p>
+<p>The presence of specific debug strings shows that the program was created with <strong>Shhhloader</strong> framework, a &ldquo;shellcode loader that takes raw shellcode as input and compiles a C++ stub that does a bunch of different things to try and bypass AV/EDR&rdquo;.</p>
+<p><img src="image-11.png" alt="Alt text"></p>
 <h3 id="final-stage-cobalt-strike">Final stage: Cobalt Strike</h3>
 <p>The final payload is a <strong>Cobalt Strike Beacon</strong> that, after obtaining the relevant information about the victim machine such as <em>username</em>, <em>computer name</em> and <em>computer version</em>, sends them to the <strong>C2</strong> <code>adblockext[.]ru</code> domain via  <strong>Base64-encoded</strong> scheme.</p>
 <pre tabindex="0"><code>https://adblockext[.]ru/functionalStatus/hw7s8TE4f9GtrBHb8iiFT7RyIAuN?_=BASE64_ENCODED_DATA
