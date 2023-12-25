@@ -124,7 +124,7 @@ The Cobalt Strike beacon uses **Base64 scheme** to communicates with the C2 doma
 ## Conclusion
 This sample is interesting because a Russian-backed hacking group targeting a domestic website raises some suspicions.  
 
-The similarities with previous APT29 campaigns (i.e., he use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of hypotheses about what this campaign could be:
+The similarities with previous APT29 campaigns (i.e., the use of ISO files containing binaries vulnerable to DLL hijacking) may lead to a couple of hypotheses about what this campaign could be:
 * An internal Red Teaming exercise, aimed at enhancing cybersecurity measures inside SberAuto employees;
 * An attack orchestrated by Ukrainian groups (particularly, The IT Army of Ukraine), trying to simulate Cozy Bear TTPs.  
 
