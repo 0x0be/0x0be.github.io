@@ -79,7 +79,7 @@ Firstly, the shellcode finds the "MZ" and "PE" header in the memory.
 
 ![Alt text](image-12.png)
 
-Then it links the following Windows API function at **runtime** from parsing **PEB_LDR_DATA** to avoid detection.
+Then it links the following Windows API function at **runtime** by parsing **PEB_LDR_DATA** to avoid detection:
 * GetProcAddress
 * GetModuleHandleW
 * LoadLibraryW

@@ -149,7 +149,7 @@ All this function API calls are done directly via <strong>syscall</strong> to hi
 <p>The APC inject shellcode represents a <strong>Cobalt Strike backdoor</strong>, as evidenced by the multiple signature matches of the THOR APT Scanner.<br>
 Firstly, the shellcode finds the &ldquo;MZ&rdquo; and &ldquo;PE&rdquo; header in the memory.</p>
 <p><img src="image-12.png" alt="Alt text"></p>
-<p>Then it links the following Windows API function at <strong>runtime</strong> from parsing <strong>PEB_LDR_DATA</strong> to avoid detection.</p>
+<p>Then it links the following Windows API function at <strong>runtime</strong> by parsing <strong>PEB_LDR_DATA</strong> to avoid detection:</p>
 <ul>
 <li>GetProcAddress</li>
 <li>GetModuleHandleW</li>
