@@ -2018,6 +2018,9 @@ blockquote p {
 }
 
 
+.green-text {
+  color: #65a50e;
+}
 
 .rainbow-text {
   /* Fallback: Set a background color. */
