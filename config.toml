@@ -58,8 +58,6 @@ pygmentsStyle = "native"
     # Enable link to feed in footer
     blogrss = true
 
-    # Enable pingback and webmention via webmention.io
-    # webmention = "hugocisneros.com"
 
 
 # Sitemap location (default is /sitemap.xml)

@@ -29,9 +29,7 @@ imgname:
 ---
 
 #
-Ciao, I'm **0x0be**!  
-A malware analyst passionate about reverse engineering and cyber threat intelligence.  
-I have always liked to break things, so hopefully you will find something interesting here!  
+Utility is when you have one telephone, luxury is when you have two, opulence is when you have three - and paradise is when you have none.  
 
 
 
